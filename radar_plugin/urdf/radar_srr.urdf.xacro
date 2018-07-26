@@ -40,7 +40,7 @@ All other specifications of SRR must be left to default values
         <gazebo reference="${name}_link">
             <material>Gazebo/Red</material>
             <!-- Logical camera for the radar -->
-            <sensor name="logical_camera" type="logical_camera">
+						<sensor name="${name}_logical_camera" type="logical_camera">
                 <logical_camera>
                     <near>0.5</near>
                     <far>80.0</far>

@@ -41,16 +41,9 @@ void RadarSRRPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf) {
 	//Transport node for getting logical camera data
 	this->node = transport::NodePtr(new transport::Node());
 	this->node->Init();
+
 	//ROS node for subscribers and radar publisher
 	this->rosNode = new ros::NodeHandle();
-
-	//Search for logical cameras on parent model
-	this->FindLogicalCamera();
-	if (!this->logicalCamera) {
-		gzerr << "Logical camera not found on any link.\n";
-		return;
-	}
-
 	this->name = _parent->GetName();
 	std::string radarROSTopic = this->name;
 	//Get topic name for radar publisher from SDF
@@ -64,6 +57,13 @@ void RadarSRRPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf) {
 		_sdf->GetElement("radarName")->GetValue()->Get(this->radarName);
 	}
 	this->radarFrame = this->radarName + "_link";
+
+	//Search for logical cameras on parent model
+	this->FindLogicalCamera();
+	if (!this->logicalCamera) {
+		gzerr << "Logical camera not found on any link.\n";
+		return;
+	}
 
 	this->nearRange = 0.5;
 	//Get minimum range of radar from SDF
@@ -130,7 +130,7 @@ void RadarSRRPlugin::FindLogicalCamera() {
 	for (physics::LinkPtr link : this->sensorModel->GetLinks()) {
 		for (unsigned int i=0; i<link->GetSensorCount(); ++i) {
 			sensors::SensorPtr sensor = sensorManager->GetSensor(link->GetSensorName(i));
-			if (sensor->Type() == "logical_camera") {
+			if (sensor->Type() == "logical_camera" && sensor->Name() == this->radarName + "_logical_camera") {
 				this->logicalCamera = sensor;
 			}
 		}
