@@ -45,8 +45,15 @@ void RadarPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf) {
     //ROS node for subscribers and radar publisher
     this->rosNode = new ros::NodeHandle();
     
+    this->radarName = "/ESRFront";
+    //Get radar frame from SDF
+    if (_sdf->HasElement("radarName")) {
+        _sdf->GetElement("radarName")->GetValue()->Get(this->radarName);
+    }
+    this->radarFrame = this->radarName + "_link";
+
     //Search for logical cameras on parent model
-    this->FindLogicalCameras();
+    this->FindLogicalCameras(); // uses radarName
     if (!this->logicalCameraMid) {
         gzerr << "Mid logical camera not found on any link.\n";
         return;
@@ -62,13 +69,6 @@ void RadarPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf) {
     if (_sdf->HasElement("topic")) {
         radarROSTopic = _sdf->Get<std::string>("topic");
     }
-
-    this->radarName = "/ESRFront";
-    //Get radar frame from SDF
-    if (_sdf->HasElement("radarName")) {
-        _sdf->GetElement("radarName")->GetValue()->Get(this->radarName);
-    }
-    this->radarFrame = this->radarName + "_link";
 
     this->nearRange = 1.0;
     //Get minimum range of radar from SDF
@@ -148,10 +148,12 @@ void RadarPlugin::FindLogicalCameras() {
     for (physics::LinkPtr link : this->sensorModel->GetLinks()) {
         for (unsigned int i=0; i<link->GetSensorCount(); ++i) {
             sensors::SensorPtr sensor = sensorManager->GetSensor(link->GetSensorName(i));
-            if (sensor->Type() == "logical_camera" && sensor->Name() == "mid_logical_camera") {
+            // if (sensor->Type() == "logical_camera" && sensor->Name() == "mid_logical_camera") {
+            if (sensor->Type() == "logical_camera" && sensor->Name() == this->radarName + "_mid_logical_camera") {
                 this->logicalCameraMid = sensor;
             }
-            if (sensor->Type() == "logical_camera" && sensor->Name() == "long_logical_camera") {
+            // if (sensor->Type() == "logical_camera" && sensor->Name() == "long_logical_camera") {
+            if (sensor->Type() == "logical_camera" && sensor->Name() == this->radarName + "_long_logical_camera") {
                 this->logicalCameraLong = sensor;
             }
         }
