@@ -40,7 +40,7 @@ All other specifications of ESR must be left to default values
         <gazebo reference="${name}_link">
             <material>Gazebo/Red</material>
             <!-- Logical camera for the radar's mid-range -->
-            <sensor name="mid_logical_camera" type="logical_camera">
+						<sensor name="${name}_mid_logical_camera" type="logical_camera">
                 <logical_camera>
                     <near>1.0</near>
                     <far>60.0</far>
@@ -52,7 +52,7 @@ All other specifications of ESR must be left to default values
                 <update_rate>20</update_rate>
             </sensor>
             <!-- Logical camera for the radar's long-range -->
-            <sensor name="long_logical_camera" type="logical_camera">
+						<sensor name="${name}_long_logical_camera" type="logical_camera">
                 <logical_camera>
                     <near>1.0</near>
                     <far>174.0</far>
