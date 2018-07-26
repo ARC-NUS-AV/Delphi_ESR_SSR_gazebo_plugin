@@ -332,8 +332,10 @@ void RadarPlugin::imageMidCB(const ConstLogicalCameraImagePtr &_msg) {
         tfScalar transformAngle = transformQuat.getAngle();
         tf::Vector3 transformAxis = transformQuat.getAxis();
         tf::Vector3 modelRelativeTfVec(modelRelativeVec.X(), modelRelativeVec.Y(), modelRelativeVec.Z());
-        tf::Vector3 tempVec = modelRelativeTfVec + transformVec;
-        tf::Vector3 finalVec = tempVec.rotate(transformAxis, transformAngle);
+        // tf::Vector3 tempVec = modelRelativeTfVec + transformVec;
+        // tf::Vector3 finalVec = tempVec.rotate(transformAxis, transformAngle);
+        tf::Vector3 tempVec = modelRelativeTfVec.rotate(transformAxis, transformAngle);
+        tf::Vector3 finalVec = tempVec + transformVec;
         ignition::math::Vector3d modelPoseVec(finalVec.getX(), finalVec.getY(), finalVec.getZ());
 
         //Add relevant data for the radar_obstacles message
