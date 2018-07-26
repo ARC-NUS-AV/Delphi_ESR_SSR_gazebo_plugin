@@ -17,6 +17,22 @@
 #include <tf/tf.h>
 #include <tf/transform_listener.h>
 #include <ignition/math4/ignition/math/Vector3.hh>
+#include <gazebo-9/gazebo/physics/Link.hh>
+#include <gazebo-9/gazebo/physics/Model.hh>
+#include <gazebo-9/gazebo/physics/World.hh>
+#include <gazebo-9/gazebo/sensors/Sensor.hh>                                                          
+#include <gazebo-9/gazebo/sensors/SensorManager.hh>                                                   
+#include <gazebo-9/gazebo/sensors/sensors.hh>                                                         
+#include <stdio.h>                                                                                    
+#include <string>                                                                                     
+#include <algorithm>
+#include <std_msgs/String.h>                                                                          
+#include <per_msgs/SensorMsgsRadar.h>
+#include <per_msgs/GeometryMsgsRadarObject.h>
+#include <ignition/math4/ignition/math/Pose3.hh>
+#include <ignition/math4/ignition/math/Vector3.hh>                                                    
+#include <ignition/math4/ignition/math/Quaternion.hh>
+
 
 namespace gazebo {
     class RadarPlugin : public ModelPlugin {
@@ -76,6 +92,9 @@ namespace gazebo {
             void FindLogicalCameras();
             // Function to add noise to sensed positions
             void AddNoise(ignition::math::Vector3d &pos);
+
+		private:
+						ignition::math::Vector3d transform_to_bl(tf::Transform T_bl_in_radar, ignition::math::Vector3d P_model_in_radar);
     };
 }
 

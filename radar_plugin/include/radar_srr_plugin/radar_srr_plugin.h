@@ -19,60 +19,64 @@
 #include <ignition/math4/ignition/math/Vector3.hh>
 
 namespace gazebo {
-    class RadarSRRPlugin : public ModelPlugin {
-        public:
-            RadarSRRPlugin();
-            virtual ~RadarSRRPlugin();
-            void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
-            //Callbacks for the logical camera used
-            void imageCB(const ConstLogicalCameraImagePtr &_msg);
-            //Callback for the subscriber to the parent car's velocity
-            void velCB(const geometry_msgs::TwistConstPtr &twist);
-            //Callback for the subscriber to gazebo/model_states
-            void modelStateCB(const gazebo_msgs::ModelStatesConstPtr &states);
+	class RadarSRRPlugin : public ModelPlugin {
+		public:
+			RadarSRRPlugin();
+			virtual ~RadarSRRPlugin();
+			void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
+			//Callbacks for the logical camera used
+			void imageCB(const ConstLogicalCameraImagePtr &_msg);
+			//Callback for the subscriber to the parent car's velocity
+			void velCB(const geometry_msgs::TwistConstPtr &twist);
+			//Callback for the subscriber to gazebo/model_states
+			void modelStateCB(const gazebo_msgs::ModelStatesConstPtr &states);
 
-        protected:
-            std::string name, radarName, radarFrame, topicName, velTopic;
-            float nearRange, farRange, hfov, vfov, occlusion;
-            int radarPointSamples;
-            ignition::math::Vector3d currentPoint;
-            std::vector<ignition::math::Vector3d> bbPointsInRadarPlane;
-            std::vector<gazebo::physics::ModelPtr> ModelsInView;
-            std::vector<std::string> blockedModelsNames;
-            std::vector<std::string> clearModelsNames;
+		protected:
+			std::string name, radarName, radarFrame, topicName, velTopic;
+			float nearRange, farRange, hfov, vfov, occlusion;
+			int radarPointSamples;
+			ignition::math::Vector3d currentPoint;
+			std::vector<ignition::math::Vector3d> bbPointsInRadarPlane;
+			std::vector<gazebo::physics::ModelPtr> ModelsInView;
+			std::vector<std::string> blockedModelsNames;
+			std::vector<std::string> clearModelsNames;
 
-            // Gazebo objects
-            physics::WorldPtr world;
-            physics::ModelPtr sensorModel;
-            physics::LinkPtr logicalCameraSensorLink;
-            sensors::SensorPtr logicalCamera;
-            sensors::NoisePtr noiseModel;
-            transport::NodePtr node;
-            transport::SubscriberPtr imageSub;
+			// Gazebo objects
+			physics::WorldPtr world;
+			physics::ModelPtr sensorModel;
+			physics::LinkPtr logicalCameraSensorLink;
+			sensors::SensorPtr logicalCamera;
+			sensors::NoisePtr noiseModel;
+			transport::NodePtr node;
+			transport::SubscriberPtr imageSub;
 
-            // ROS objects
-            ros::NodeHandle *rosNode;
-            ros::Publisher radarPublisher;
-            ros::Subscriber velSubscriber;
-            ros::Subscriber modelStateSubscriber;
+			// ROS objects
+			ros::NodeHandle *rosNode;
+			ros::Publisher radarPublisher;
+			ros::Subscriber velSubscriber;
+			ros::Subscriber modelStateSubscriber;
 
-            // Radar message objects
-            per_msgs::GeometryMsgsRadarObject radarObj;
-            per_msgs::SensorMsgsRadar sensorMsg;
+			// Radar message objects
+			per_msgs::GeometryMsgsRadarObject radarObj;
+			per_msgs::SensorMsgsRadar sensorMsg;
 
-            // Objects to get model velocities
-            gazebo_msgs::ModelStates modelStates;
-            geometry_msgs::Vector3 currentCarLinearVel, modelLinearVel;
+			// Objects to get model velocities
+			gazebo_msgs::ModelStates modelStates;
+			geometry_msgs::Vector3 currentCarLinearVel, modelLinearVel;
 
-            // TF objects
-            tf::TransformListener _listener;
-            tf::StampedTransform _transform;
-            
-            // Function to find logical cameras on parent model
-            void FindLogicalCamera();
-            // Function to add noise to sensed positions
-            void AddNoise(ignition::math::Vector3d &pos);
-    };
+			// TF objects
+			tf::TransformListener _listener;
+			tf::StampedTransform _transform;
+
+			// Function to find logical cameras on parent model
+			void FindLogicalCamera();
+			// Function to add noise to sensed positions
+			void AddNoise(ignition::math::Vector3d &pos);
+
+		private:
+			ignition::math::Vector3d transform_to_bl(tf::Transform T_bl_in_radar, ignition::math::Vector3d P_model_in_radar);
+
+	};
 }
 
 #endif
